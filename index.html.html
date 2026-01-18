@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Modern fashion e-commerce demo (HTML, CSS, JS)" />
+    <title>ModaMart — Fashion Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="header">
+      <div class="container header__row">
+        <div class="brand">
+          <div class="brand__logo" aria-hidden="true">MM</div>
+          <div class="brand__text">
+            <div class="brand__name">ModaMart</div>
+            <div class="brand__tag">Men & Women Fashion</div>
+          </div>
+        </div>
+
+        <nav class="header__actions" aria-label="Store actions">
+          <div class="search">
+            <label class="sr-only" for="searchInput">Search products</label>
+            <input id="searchInput" class="search__input" type="search" placeholder="Search shirts, dresses, shoes…" />
+            <button id="clearSearchBtn" class="btn btn--ghost btn--sm" type="button" title="Clear search">
+              Clear
+            </button>
+          </div>
+
+          <button id="cartBtn" class="btn btn--primary" type="button" aria-haspopup="dialog" aria-controls="cartDrawer">
+            Cart <span id="cartCount" class="pill">0</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero" aria-label="Featured">
+      <div class="container hero__grid">
+        <div class="hero__copy">
+          <div class="badge">New Season • 2026</div>
+          <h1 class="hero__title">Upgrade your wardrobe with clean, modern fits.</h1>
+          <p class="hero__subtitle">
+            Explore curated essentials for men and women—smart casual, streetwear, and everyday basics.
+          </p>
+          <div class="hero__cta">
+            <a class="btn btn--primary" href="#products">Shop collection</a>
+            <button id="randomPickBtn" class="btn btn--ghost" type="button">Pick for me</button>
+          </div>
+          <div class="hero__meta">
+            <div class="meta">
+              <div class="meta__kpi">Free returns</div>
+              <div class="meta__sub">within 14 days</div>
+            </div>
+            <div class="meta">
+              <div class="meta__kpi">Fast checkout</div>
+              <div class="meta__sub">simple cart</div>
+            </div>
+            <div class="meta">
+              <div class="meta__kpi">Dummy data</div>
+              <div class="meta__sub">for demo use</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__card" role="img" aria-label="Fashion showcase card">
+          <div class="hero__cardTop">
+            <div class="hero__cardTitle">Today’s picks</div>
+            <div class="hero__cardHint">Tap “Pick for me” for a random product.</div>
+          </div>
+          <div class="hero__cardBottom">
+            <div class="hero__chip">Minimal</div>
+            <div class="hero__chip">Street</div>
+            <div class="hero__chip">Formal</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main id="main" class="main">
+      <div class="container">
+        <section class="toolbar" aria-label="Filters">
+          <div class="toolbar__left">
+            <h2 id="products" class="sectionTitle">Products</h2>
+            <p class="sectionSub" id="resultCount">Loading…</p>
+          </div>
+
+          <div class="toolbar__right">
+            <div class="segmented" role="tablist" aria-label="Category filter">
+              <button class="segmented__btn is-active" type="button" data-filter="all" role="tab" aria-selected="true">
+                All
+              </button>
+              <button class="segmented__btn" type="button" data-filter="women" role="tab" aria-selected="false">
+                Women
+              </button>
+              <button class="segmented__btn" type="button" data-filter="men" role="tab" aria-selected="false">
+                Men
+              </button>
+              <button class="segmented__btn" type="button" data-filter="accessories" role="tab" aria-selected="false">
+                Accessories
+              </button>
+            </div>
+
+            <div class="select">
+              <label class="sr-only" for="sortSelect">Sort</label>
+              <select id="sortSelect" class="select__control">
+                <option value="featured">Sort: Featured</option>
+                <option value="price-asc">Price: Low → High</option>
+                <option value="price-desc">Price: High → Low</option>
+                <option value="rating-desc">Rating: High → Low</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section aria-label="Product listing">
+          <div id="productGrid" class="grid" aria-live="polite"></div>
+        </section>
+      </div>
+    </main>
+
+    <div id="toastHost" class="toastHost" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Cart Drawer -->
+    <div id="cartBackdrop" class="backdrop" hidden></div>
+    <aside id="cartDrawer" class="drawer" role="dialog" aria-modal="true" aria-label="Shopping cart" hidden>
+      <div class="drawer__header">
+        <div>
+          <div class="drawer__title">Your Cart</div>
+          <div class="drawer__sub" id="cartSub">0 items</div>
+        </div>
+        <button id="closeCartBtn" class="btn btn--ghost btn--sm" type="button" aria-label="Close cart">Close</button>
+      </div>
+
+      <div id="cartItems" class="drawer__items" role="region" aria-label="Cart items"></div>
+
+      <div class="drawer__footer">
+        <div class="totals">
+          <div class="totals__row">
+            <span>Subtotal</span>
+            <strong id="subtotal">$0.00</strong>
+          </div>
+          <div class="totals__row totals__muted">
+            <span>Shipping</span>
+            <span id="shipping">$0.00</span>
+          </div>
+          <div class="totals__row totals__muted">
+            <span>Tax</span>
+            <span id="tax">$0.00</span>
+          </div>
+          <div class="totals__row totals__grand">
+            <span>Total</span>
+            <strong id="total">$0.00</strong>
+          </div>
+        </div>
+
+        <button id="checkoutBtn" class="btn btn--primary btn--block" type="button">Checkout (demo)</button>
+        <button id="clearCartBtn" class="btn btn--ghost btn--block" type="button">Clear cart</button>
+        <p class="fineprint">This is a front-end demo with dummy products (no real payments).</p>
+      </div>
+    </aside>
+
+    <footer class="footer">
+      <div class="container footer__row">
+        <div class="footer__left">
+          <div class="footer__brand">ModaMart</div>
+          <div class="footer__sub">HTML • CSS • JavaScript • Responsive</div>
+        </div>
+        <div class="footer__right">
+          <a class="link" href="#products">Back to products</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Modern fashion e-commerce demo (HTML, CSS, JS)" />
+    <title>ModaMart — Fashion Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="header">
+      <div class="container header__row">
+        <div class="brand">
+          <div class="brand__logo" aria-hidden="true">MM</div>
+          <div class="brand__text">
+            <div class="brand__name">ModaMart</div>
+            <div class="brand__tag">Men & Women Fashion</div>
+          </div>
+        </div>
+
+        <nav class="header__actions" aria-label="Store actions">
+          <div class="search">
+            <label class="sr-only" for="searchInput">Search products</label>
+            <input id="searchInput" class="search__input" type="search" placeholder="Search shirts, dresses, shoes…" />
+            <button id="clearSearchBtn" class="btn btn--ghost btn--sm" type="button" title="Clear search">
+              Clear
+            </button>
+          </div>
+
+          <button id="cartBtn" class="btn btn--primary" type="button" aria-haspopup="dialog" aria-controls="cartDrawer">
+            Cart <span id="cartCount" class="pill">0</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero" aria-label="Featured">
+      <div class="container hero__grid">
+        <div class="hero__copy">
+          <div class="badge">New Season • 2026</div>
+          <h1 class="hero__title">Upgrade your wardrobe with clean, modern fits.</h1>
+          <p class="hero__subtitle">
+            Explore curated essentials for men and women—smart casual, streetwear, and everyday basics.
+          </p>
+          <div class="hero__cta">
+            <a class="btn btn--primary" href="#products">Shop collection</a>
+            <button id="randomPickBtn" class="btn btn--ghost" type="button">Pick for me</button>
+          </div>
+          <div class="hero__meta">
+            <div class="meta">
+              <div class="meta__kpi">Free returns</div>
+              <div class="meta__sub">within 14 days</div>
+            </div>
+            <div class="meta">
+              <div class="meta__kpi">Fast checkout</div>
+              <div class="meta__sub">simple cart</div>
+            </div>
+            <div class="meta">
+              <div class="meta__kpi">Dummy data</div>
+              <div class="meta__sub">for demo use</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__card" role="img" aria-label="Fashion showcase card">
+          <div class="hero__cardTop">
+            <div class="hero__cardTitle">Today’s picks</div>
+            <div class="hero__cardHint">Tap “Pick for me” for a random product.</div>
+          </div>
+          <div class="hero__cardBottom">
+            <div class="hero__chip">Minimal</div>
+            <div class="hero__chip">Street</div>
+            <div class="hero__chip">Formal</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main id="main" class="main">
+      <div class="container">
+        <section class="toolbar" aria-label="Filters">
+          <div class="toolbar__left">
+            <h2 id="products" class="sectionTitle">Products</h2>
+            <p class="sectionSub" id="resultCount">Loading…</p>
+          </div>
+
+          <div class="toolbar__right">
+            <div class="segmented" role="tablist" aria-label="Category filter">
+              <button class="segmented__btn is-active" type="button" data-filter="all" role="tab" aria-selected="true">
+                All
+              </button>
+              <button class="segmented__btn" type="button" data-filter="women" role="tab" aria-selected="false">
+                Women
+              </button>
+              <button class="segmented__btn" type="button" data-filter="men" role="tab" aria-selected="false">
+                Men
+              </button>
+              <button class="segmented__btn" type="button" data-filter="accessories" role="tab" aria-selected="false">
+                Accessories
+              </button>
+            </div>
+
+            <div class="select">
+              <label class="sr-only" for="sortSelect">Sort</label>
+              <select id="sortSelect" class="select__control">
+                <option value="featured">Sort: Featured</option>
+                <option value="price-asc">Price: Low → High</option>
+                <option value="price-desc">Price: High → Low</option>
+                <option value="rating-desc">Rating: High → Low</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section aria-label="Product listing">
+          <div id="productGrid" class="grid" aria-live="polite"></div>
+        </section>
+      </div>
+    </main>
+
+    <div id="toastHost" class="toastHost" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Cart Drawer -->
+    <div id="cartBackdrop" class="backdrop" hidden></div>
+    <aside id="cartDrawer" class="drawer" role="dialog" aria-modal="true" aria-label="Shopping cart" hidden>
+      <div class="drawer__header">
+        <div>
+          <div class="drawer__title">Your Cart</div>
+          <div class="drawer__sub" id="cartSub">0 items</div>
+        </div>
+        <button id="closeCartBtn" class="btn btn--ghost btn--sm" type="button" aria-label="Close cart">Close</button>
+      </div>
+
+      <div id="cartItems" class="drawer__items" role="region" aria-label="Cart items"></div>
+
+      <div class="drawer__footer">
+        <div class="totals">
+          <div class="totals__row">
+            <span>Subtotal</span>
+            <strong id="subtotal">$0.00</strong>
+          </div>
+          <div class="totals__row totals__muted">
+            <span>Shipping</span>
+            <span id="shipping">$0.00</span>
+          </div>
+          <div class="totals__row totals__muted">
+            <span>Tax</span>
+            <span id="tax">$0.00</span>
+          </div>
+          <div class="totals__row totals__grand">
+            <span>Total</span>
+            <strong id="total">$0.00</strong>
+          </div>
+        </div>
+
+        <button id="checkoutBtn" class="btn btn--primary btn--block" type="button">Checkout (demo)</button>
+        <button id="clearCartBtn" class="btn btn--ghost btn--block" type="button">Clear cart</button>
+        <p class="fineprint">This is a front-end demo with dummy products (no real payments).</p>
+      </div>
+    </aside>
+
+    <footer class="footer">
+      <div class="container footer__row">
+        <div class="footer__left">
+          <div class="footer__brand">ModaMart</div>
+          <div class="footer__sub">HTML • CSS • JavaScript • Responsive</div>
+        </div>
+        <div class="footer__right">
+          <a class="link" href="#products">Back to products</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+
